@@ -1,31 +1,38 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
-
+name: Build and Copy To Server
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+ push:
+  branches: [main]
+ pull_request:
+  branches: [main]
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x, 18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+ build:
+  runs-on: ubuntu-latest
+  strategy:
+    matrix:
+      node-version: [16.x]
+  steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+            node-version: ${{ matrix.node-version }}
+            cache: 'npm'
+      - run: npm install
+      - run: npm run build
+      - run: git clone https://danibarker:${{ secrets.PAT }}@github.com/EvolveU-FSD/c9-superheroes-server target
+      - run: cd target
+      - run: rm -rf target/dist/*
+      - run: cp -r build/* target/dist
+      - name: Push Client
+        working-directory: ./target
+        run: |
+          pwd
+          ls -a
+          ls public
+          git remote --verbose
+          git add .
+          git config --global user.email "caseybarker86@gmail.com"
+          git config --global user.name "Danielle Barker"
+          git diff-index --quiet HEAD || git commit -m "Automatic publish from github.com/project"
+          git status
+          git push
