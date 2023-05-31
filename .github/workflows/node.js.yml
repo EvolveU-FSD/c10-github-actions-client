@@ -19,7 +19,7 @@ jobs:
             cache: 'npm'
       - run: npm install
       - run: npm run build
-      - run: git clone https://danibarker:${{ secrets.PAT }}@github.com/EvolveU-FSD/c9-superheroes-server target
+      - run: git clone https://danibarker:${{ secrets.PAT }}@github.com/EvolveU-FSD/c10-github-actions-server target
       - run: cd target
       - run: rm -rf target/dist/*
       - run: cp -r dist/* target/dist
