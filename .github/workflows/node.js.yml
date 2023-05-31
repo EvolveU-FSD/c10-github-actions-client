@@ -22,7 +22,7 @@ jobs:
       - run: git clone https://danibarker:${{ secrets.PAT }}@github.com/EvolveU-FSD/c9-superheroes-server target
       - run: cd target
       - run: rm -rf target/dist/*
-      - run: cp -r build/* target/dist
+      - run: cp -r dist/* target/dist
       - name: Push Client
         working-directory: ./target
         run: |
